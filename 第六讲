@@ -1,1 +1,71 @@
+class ParticleSystem {
+  ArrayList<Particle> particles;
 
+  PShape particleShape;
+
+  int shiningFrame = 0;
+  PVector shiningCenter = new PVector(width/2, height/2) ;
+  boolean shining;
+
+  ParticleSystem(int n) {
+    particles = new ArrayList<Particle>();
+    particleShape = createShape(PShape.GROUP);
+
+    for (int i = 0; i < n; i++) {
+      Particle p = new Particle();
+      particles.add(p);
+      particleShape.addChild(p.getShape());
+    }
+  }
+
+  void update() {
+    for (Particle p : particles) {
+      p.update();
+    }
+  }
+
+  void rebirthParticles() {
+    for (Particle p : particles) {
+      if (p.isDead()) {
+        p.rebirth();
+      }
+    }
+  }
+
+  void detectForce(int x, int y) {
+    for (Particle p : particles) {
+      p.addForce(x, y);
+    }
+  }
+
+  void display() {
+    shape(particleShape);
+  }
+
+  void emitWave(int centerx, int centery) {
+    shining = true;
+    shiningFrame = 1; //resetshining
+    shiningCenter = new PVector(centerx, centery);
+    changeColor();
+  }
+
+  boolean getShining() {
+    if (shiningFrame >= 300)
+    {
+      shiningFrame=0;
+      shining = false;
+    }
+    if (shining == true)return true;
+    else return false;
+  }
+
+  void updateShiningFrame() {
+    if (shining == true) shiningFrame ++;
+  }
+
+  void changeColor() {
+    for (Particle p : particles) {
+      p.changeColor(shiningFrame, shiningCenter, shining);
+    }
+  }
+}
