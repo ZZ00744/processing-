@@ -1,0 +1,160 @@
+let w1Points, w11Points;
+let colors, ncolors;
+let nRows, nColumns, rowHeight, columnWidth;
+let aPoints, nInner;
+let backGroundColor;
+let mid1;
+let alpha=0.3;
+let randomFactor=0.3;
+let play=true;
+
+function setup() {
+
+  createCanvas(windowWidth, windowHeight);
+  colorMode(HSB, 360, 255, 255, 255);  
+  ncolors=8;
+	backGroundColor=color(random(360), random(50), random(225,255));
+  background(backGroundColor);  
+  colors=[];
+  strokeWeight(1.5);
+  strokeJoin(ROUND);
+  imageMode(CENTER); 
+}
+
+function draw() {
+	if(play){
+  background(backGroundColor);
+	nRows=int(random(1, 6));
+  if(windowWidth>windowHeight)nColumns=int(1.5*nRows);else nColumns=int(.75*nRows);
+  columnWidth=int(windowWidth/nColumns);
+  rowHeight=int(windowHeight/nRows);  
+  w1Points=[];
+  w11Points=[];
+  for (nr=0; nr<nRows; nr++) {
+    for (nc=0; nc<nColumns; nc++) {
+      push();
+      translate(nc*columnWidth, nr*rowHeight);
+      randomBase();
+      newButterfly();
+      pop();
+    }
+  }
+  play=false;
+	}
+}
+function touchStarted(){
+	if(!play)play=true;
+}
+function deviceTurned() {
+	play=true;
+  setup();
+}
+function newButterfly() {
+	
+  //for each wing
+  for (k=0; k<aPoints.length-1; k++) {//mod //0; k<aPoints.length-1; k++) {//mod 
+		
+    //reset arrays
+    w1Points=[];
+    //calculate center postion and randomize points
+    mid1=new p5.Vector(0, 0);
+    for (i=0; i<aPoints[k].length; i++) {
+      w1Points[i]=aPoints[k][i];//randomize(aPoints[k][i], .001);
+      mid1.add(w1Points[i]);
+    }
+    mid1.div(aPoints[k].length);
+    fill(colors[(3*k)%ncolors]);
+		if (k==0) {
+      ellipse(columnWidth/2.03, rowHeight/5, .1*rowHeight, .1*rowHeight);
+      ellipse(columnWidth/1.97, rowHeight/5, .1*rowHeight, .1*rowHeight);
+    }
+    let n1=w1Points.length;  
+    beginShape();
+    curveVertex(w1Points[0].x, w1Points[0].y);
+    for (let i=0; i<n1; i++) {    
+      curveVertex(w1Points[i].x, w1Points[i].y);
+    }
+    endShape(CLOSE);
+    beginShape();
+    curveVertex(columnWidth-w1Points[0].x, w1Points[0].y);
+    for (let i=0; i<n1; i++) {    
+      curveVertex(columnWidth-w1Points[i].x, w1Points[i].y);
+    }
+    endShape(CLOSE);
+
+    for (let j=0; j<nInner; j++) {  
+      fill(colors[(3*k+j)%ncolors]);
+      beginShape();
+      curveVertex(w1Points[0].x, w1Points[0].y);
+      for (let i=0; i<n1; i++) {    
+        curveVertex(w1Points[i].x, w1Points[i].y);
+        w11Points[i]=mid(w1Points[i], mid1, alpha);
+        curveVertex(w11Points[i].x, w11Points[i].y);
+      }
+      endShape(CLOSE);
+      beginShape();
+      curveVertex(columnWidth-w1Points[0].x, w1Points[0].y);
+      for (let i=0; i<n1; i++) {    
+        curveVertex(columnWidth-w1Points[i].x, w1Points[i].y);
+        curveVertex(columnWidth-w11Points[i].x, w11Points[i].y);
+      }
+      endShape(CLOSE);
+      w1Points=w11Points.slice();
+    }
+
+    beginShape();
+    curveVertex(w11Points[0].x, w11Points[0].y);
+    for (let i=0; i<n1; i++) {    
+      curveVertex(w11Points[i].x, w11Points[i].y);
+      curveVertex(mid1.x, mid1.y);
+    }
+    endShape(CLOSE);
+
+    beginShape();
+    curveVertex(columnWidth-w11Points[0].x, w11Points[0].y);
+    for (let i=0; i<n1; i++) {    
+      curveVertex(columnWidth-w11Points[i].x, w11Points[i].y);
+      curveVertex(columnWidth-mid1.x, mid1.y);
+    }
+    endShape(CLOSE);
+    
+  }
+  let n1=aPoints[k].length;  
+    beginShape();
+    curveVertex(aPoints[k][0].x, aPoints[k][0].y);
+    for (let i=0; i<n1; i++) {    
+      curveVertex(aPoints[k][i].x,aPoints[k][i].y);
+    }
+    endShape();
+    beginShape();
+    curveVertex(columnWidth-aPoints[k][0].x, aPoints[k][0].y);
+    for (let i=0; i<n1; i++) {    
+      curveVertex(columnWidth-aPoints[k][i].x,aPoints[k][i].y);
+    }
+    endShape();
+}
+function randomBase() {
+	backGroundColor=color(random(360), random(50), random(225,255));
+  alpha=random(0.1, 0.5);
+  nInner=int(random(2, 10));  
+  aPoints=[[ new p5.Vector(.5*columnWidth, .2*rowHeight), new p5.Vector(.45*columnWidth, .5*rowHeight), new p5.Vector(.5*columnWidth, .6*rowHeight)], 
+    [ new p5.Vector(.5*columnWidth, .3*rowHeight), new p5.Vector(.45*columnWidth, .6*rowHeight), new p5.Vector(.35*columnWidth, .7*rowHeight), new p5.Vector(.25*columnWidth, .5*rowHeight)], 
+    [new p5.Vector(columnWidth/2, rowHeight/3), new p5.Vector(columnWidth/2.5, rowHeight/6), 
+    new p5.Vector(columnWidth/4, rowHeight/9), new p5.Vector(columnWidth/9, rowHeight/7), new p5.Vector(columnWidth/6, rowHeight/3), new p5.Vector(columnWidth/4, rowHeight/2)],
+    [new p5.Vector(columnWidth/2, .2*rowHeight),new p5.Vector(columnWidth/2.1, .01*rowHeight),new p5.Vector(columnWidth/2.3, .01*rowHeight)]];
+  for (col=0; col<ncolors; col++) {
+    colors[col]=color(random(360), random(255), random(255), random(255));//,random(1)>.5 ?100:220
+  }
+  for (let k=0; k<aPoints.length; k++) {
+    for (i=1; i<aPoints[k].length-1; i++) {
+      if (k!=0 || i!=3)aPoints[k][i]=randomize(aPoints[k][i], randomFactor);
+    }
+  }
+}
+function randomize(a, b) {
+  return new p5.Vector(a.x*random(1-b, 1+b), a.y*random(1-b, 1+b));
+  //return new p5.Vector(a.x, a.y).add(new p5.Vector(1-2*noise(.01*frameCount),1-2*noise(.023*frameCount)));
+}
+function mid(a, b, c) {
+  return new p5.Vector(a.x+c*(b.x-a.x), a.y+c*(b.y-a.y));
+}
