@@ -1,0 +1,615 @@
+ArrayList<Plant> plants = new ArrayList<Plant>();
+ArrayList<Lion> lions   = new ArrayList<Lion>();
+ArrayList<Deer> deers = new ArrayList<Deer>();
+ArrayList<Dung> dungs   = new ArrayList<Dung>();
+
+float xrange=980, yrange=790;
+int N=200;
+int zebraHP=15, lionHP=15;
+
+PImage add, delete,imply,day,lionicon,deepicon,grassicon;
+int menupage=0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+int selectitem=0;
+boolean nightmode=false;
+
+int msecond=0;
+int second=0;
+int minute=0; 
+int wait;
+boolean gameover=false;
+
+void setup() {
+  size(1410, 800);
+
+  for (int i=0; i<N; i++) {   
+    float r = random(1);
+    if (r<0.85) {
+      plants.add(new Plant(xrange/2+random(-xrange/2+5, xrange/2-5), yrange/2+random(-yrange/2+5, yrange/2-5), 20, color(37, 113, 58)));
+    } else if (r<0.97) {
+      deers.add(new Deer(xrange/2+random(-xrange/2+6, xrange/2-6), yrange/2+random(-yrange/2+6, yrange/2-6), 20, color(35, 108, 180), zebraHP));
+    } else {
+      lions.add(new Lion(xrange/2+random(-xrange/2+7, xrange/2-7), yrange/2+random(-yrange/2+7, yrange/2-7), 25, color(173,17,46), lionHP));
+    }
+  }
+
+  add=loadImage("a.png");
+  delete=loadImage("b.png");
+  imply=loadImage("c.png");
+  day=loadImage("d.png");
+  lionicon=loadImage("e.png");
+  deepicon=loadImage("f.png");
+  grassicon=loadImage("g.png");
+
+  PFont pf=createFont("幼圆", 30);//youyuan
+  textFont(pf);
+}
+void draw() {
+  pushMatrix();
+  if (nightmode) {
+    background(0);
+    stroke(255);
+  } else {
+    background(255);
+    stroke(0);
+  }
+  strokeWeight(7);
+  noFill();
+  rect(2, 5, 1390, 790,30);
+  
+  for (int i = plants.size ()-1; i>=0; i--) {
+    Plant pla = plants.get(i);
+    pla.update();
+    if (pla.dead()) plants.remove(i);
+  }
+  for (int i = deers.size ()-1; i>=0; i--) {
+    Deer z = deers.get(i);
+    z.update();
+    if (z.dead()) deers.remove(i);
+  }
+  for (int i = lions.size ()-1; i>=0; i--) {
+    Lion l = lions.get(i);
+    l.update();
+    if (l.dead()) lions.remove(i);
+  }
+  for (int i = dungs.size ()-1; i>=0; i--) {
+    Dung d = dungs.get(i);
+    d.update();  
+    if (d.dead()) dungs.remove(i);
+  }
+  popMatrix();
+  menudisplay();
+  judgegameover();
+}
+
+void menudisplay() {
+  strokeWeight(5);
+  if (nightmode) {
+    stroke(255);
+    fill(#1A1919);
+  } else {
+    stroke(0);
+    fill(240);
+  }
+  rect(995, 5, 410, 790,30);
+  
+   if (nightmode) { 
+    fill(255);
+  } else {
+    fill(0);
+  }
+  textSize(32);
+  textAlign( CENTER );
+  text("「生态瓶」", 1200, 65);
+  image(add, 1000, 100, 100, 100);
+  image(delete, 1100, 100, 100, 100);
+  image(imply, 1200, 100, 100, 100);
+  image(day, 1300, 100, 100, 100);
+  
+  noFill();
+  strokeWeight(4);
+  rect(1000, 100, 100, 100,15);
+  rect(1100, 100, 100, 100,15);
+  rect(1200, 100, 100, 100,15);
+  rect(1300, 100, 100, 100,15);
+
+  if (menupage!=0) {
+    stroke(255, 0, 0);
+    strokeWeight(5);
+    noFill();
+    rect(1000+(menupage-1)*100, 100, 100, 100,15);
+    textAlign( CENTER );
+    switch (menupage) {
+    case 1:
+      if (nightmode) {
+        fill(#FFFFFC);
+      } else {
+        fill(0);
+      }
+      textSize(30);
+      text("添加物种", 1200, 270); //add
+
+      if (nightmode) {
+        stroke(#FFFFFC);
+      } else {
+        stroke(0);
+      }
+
+      noFill();
+      for (int i=0; i<3; i++) {
+        rect(1050, 300+i*100, 300, 100,15);
+      }
+      if (selectitem!=0) {
+        stroke(255, 0, 0);
+        strokeWeight(5);
+        noFill();
+        rect(1050, 300+(selectitem-1)*100, 300, 100,15);
+      }
+      noStroke();
+      fill(173,17,46);
+      ellipse(1300, 350, 40, 40);
+      textSize(24);
+      text("食肉动物", 1200, 360); //meat-eating
+
+
+      fill(35, 108, 180);
+      ellipse(1300, 450, 40, 40);
+      text("食草动物", 1200, 460);//grass-eating
+
+      stroke(37, 113, 58);
+      fill(37, 113, 58);
+      strokeWeight(6);
+      line(1300, 540, 1280, 560);
+      line(1300, 540, 1320, 560);
+      text("植物", 1200, 560);//plant
+      
+      image(lionicon, 1050, 300, 100, 100);
+      image(deepicon, 1050, 400, 100, 100);
+      image(grassicon, 1050, 500, 100, 100);
+
+      break;
+
+    case 2 :
+      fill(216,216,214);
+      noStroke();
+      ellipse(mouseX,mouseY,40,40);
+      if (nightmode) {
+        fill(#FFFFFC);
+      } else {
+        fill(0);
+      }
+      textSize(30);
+      text("删除物种", 1200, 270); //delete
+      textSize(24);
+      text("按住鼠标，拖动擦除", 1180, 370);
+      break;
+    case 3 :
+      if (nightmode) {
+        fill(#FFFFFC);
+      } else {
+        fill(0);
+      }
+      textSize(30);
+      text("物种数量", 1200, 270); //imply   
+      
+      textSize(24);
+      text("食肉动物："+lions.size(), 1250, 370);
+      text("食草动物："+deers.size(), 1250, 470);
+      text("植物："+plants.size(), 1250, 570);  
+      image(lionicon, 1050, 300, 100, 100);
+      image(deepicon, 1050, 400, 100, 100);
+      image(grassicon, 1050, 500, 100, 100);
+      
+      break;
+     
+     case 4:
+     textSize(30);
+     if (nightmode) {
+        fill(#FFFFFC);
+        text("光线模式", 1200, 270);       
+      } else {
+        fill(0);
+        text("光线模式", 1200, 270);       
+      }
+                
+    default:
+      break;
+    }
+  }
+
+  if (gameover==false) {  
+
+    msecond++;
+    if (msecond>=100) {
+      second++;
+      msecond=0;
+    }
+    if (second>=60) {
+      minute++;
+      second=0;
+    }
+    if (nightmode) {
+      fill(#FFFFFC);
+    } else {
+      fill(0);
+    }
+  } else {
+    fill(255, 0, 0);
+  }
+  textAlign( CORNER );
+  textSize(24);
+  text("生存时间:"+minute+":"+second+":"+msecond+"", 1100, 760);
+  //text("frameCout:"+frameCount,1010,675);
+}
+
+void mousePressed() {
+  if (mouseX>=1000) {
+    for (int i=1; i<5; i++) {
+      if (mouseX>=1000+(i-1)*100&&mouseX<=1000+i*100&&mouseY>=100&&mouseY<=200) {
+        menupage=i;
+        if (menupage==4) {
+      
+          nightmode=!nightmode;
+        }
+        selectitem=0;
+      }
+    }
+    if (menupage==1) {
+      for (int i=0; i<3; i++) {
+        if (mouseY>=300+i*100&&mouseY<=300+(i+1)*100) {
+          selectitem=i+1;
+        }
+      }
+    }
+  
+  }
+}
+void judgegameover() {
+  if (deers.size ()==0||lions.size ()==0) {
+    gameover=true;
+  }
+}
+void mouseDragged() {
+
+  if (mouseX<=1000) {
+    if (menupage==1) {
+      switch(selectitem) {
+      case 1:
+
+        if (wait>=30) {
+          lions.add(new Lion(mouseX, mouseY, 25, color(173,17,46), lionHP));
+          wait=0;
+        }
+        break;
+      case 2:
+        if (wait>=30) {
+          deers.add(new Deer(mouseX, mouseY, 20, color(35, 108, 180), zebraHP));
+          wait=0;
+        }
+        break;
+      case 3:
+        if (wait>=30) {
+          plants.add(new Plant(mouseX, mouseY, 20, color(37, 113, 58)));
+          wait=0;
+        }
+        break;
+      }
+      wait++;
+    } else if (menupage==2) {
+     
+      for (int i = plants.size ()-1; i>=0; i--) {
+        Plant p = plants.get(i);
+        if (dist(mouseX, mouseY, p.xpos, p.ypos)<=(p.diameter/2)) plants.remove(i);
+      }
+      for (int i = deers.size ()-1; i>=0; i--) {
+        Deer z = deers.get(i);
+        if (dist(mouseX, mouseY, z.xpos, z.ypos)<=(z.diameter/2)) deers.remove(i);
+      }
+      for (int i = lions.size ()-1; i>=0; i--) {
+        Lion l = lions.get(i);
+        if (dist(mouseX, mouseY, l.xpos, l.ypos)<=(l.diameter/2)) lions.remove(i);
+      }
+      for (int i = dungs.size ()-1; i>=0; i--) {
+        Dung d = dungs.get(i);
+        if (dist(mouseX, mouseY, d.xpos, d.ypos)<=(d.diameter/2)) dungs.remove(i);
+      }
+    }
+     
+  }
+}
+
+
+//animal
+class Animal {
+
+  float vx, vy, xpos, ypos; 
+  float diameter;           
+  int life=0, food=0;
+  boolean paku = false;   
+  color col;
+
+  Animal(float x, float y, float _diameter, color _col, int _life) {
+    xpos = x;
+    ypos = y;
+    diameter = _diameter;
+    col = _col;
+    life = _life;
+  }
+  Animal(float x, float y, float _diameter, color _col, int _life, boolean _breed) {
+    xpos = x-_diameter;
+    ypos = y;
+    diameter = _diameter;
+    col = _col;
+    life = _life;
+    if (xpos<=_diameter) xpos=_diameter;
+    if (ypos<=_diameter) ypos=_diameter;
+  }
+
+  void move() {
+    if (frameCount%(60*(int)random(1, 3))==0) {
+      life--;
+
+      vx=random(-2,2);
+      vy=random(-2,2);
+    }
+    xpos+=vx;
+    ypos+=vy;
+  }
+  void edge() {
+    if (xpos < diameter/2 || xpos > xrange-diameter/2) {
+      vx*=-2;
+    }
+    if (ypos < diameter/2 || ypos > yrange-diameter/2) {
+      vy*=-2;
+    }
+  }
+  void display() {
+    fill(col);
+    noStroke();
+    ellipse(xpos, ypos, diameter, diameter);
+    stroke(0);
+  }
+  boolean dead(float _xpos, float _ypos, float _diameter, boolean _paku, int _life) {
+    if (_paku == true) return true;
+    if (_life<=0) {
+       if (nightmode) {
+        dungs.add(new Dung(_xpos, _ypos, _diameter, color(#FFFFFC), false));
+      } else {
+         dungs.add(new Dung(_xpos, _ypos, _diameter, color(0, 0, 0), false));
+      }
+      return true;
+    }
+    //生存
+    else  return false;
+  }
+}
+
+
+//Dung
+class Dung extends Plant {
+
+  int fTime;
+  Dung(float x, float y, float _diameter, color _col, boolean _yummy) {
+    super(x, y, _diameter, _col, _yummy);
+    fTime=frameCount-1;
+  }
+
+  void update() {
+    time();
+    display(yummy);
+  }
+
+  void time() {
+    if ((frameCount-fTime)%480==0) {
+     int rand=(int)random(5);
+     if(rand>0){
+      for (int i = 1; i<=4; i++) {
+        if (i==1) {
+          plants.add(new Plant(xpos+diameter/2, ypos+diameter/2, diameter, color(37, 113, 58), false));
+        } else if (i==2) {
+          plants.add(new Plant(xpos-diameter/2, ypos+diameter/2, diameter, color(37, 113, 58), false));
+        } else if (i==3) {
+          plants.add(new Plant(xpos-diameter/2, ypos-diameter/2, diameter, color(37, 113, 58), false));
+        } else if (i==4) {
+          plants.add(new Plant(xpos+diameter/2, ypos-diameter/2, diameter, color(37, 113, 58), false));
+        }
+      }
+     }else{
+     }
+      life=0;
+    }    
+  }
+
+  void display(boolean _yummy) {
+    fill(col);
+    noStroke();
+    //食われたか
+    if (yummy) {
+      rect(xpos, ypos, diameter/2, diameter/2);//フン
+    } else {       
+      ellipse(xpos, ypos, diameter, diameter);//死がい
+    }
+    stroke(0);
+  }
+  boolean dead() {
+
+    if (life<=0) return true;
+    else       return false;
+  }
+}
+
+
+//lion
+class Lion extends Animal {
+  Lion(float x, float y, float _diameter, color _col, int _life) {
+    super(x, y, _diameter, _col, _life);
+  }
+  Lion(float x, float y, float _diameter, color _col, int _life, boolean _breed) {
+    super(x, y, _diameter, _col, _life, _breed);
+  }
+
+  void update() {
+    move();
+    eat();
+    edge();
+    display();
+  }
+
+  void move() {
+    super.move();
+  }
+
+  void eat() {
+    for (int i = deers.size()-1; i>=0; i--) {
+      Deer z = deers.get(i);
+      if (dist(xpos, ypos, z.xpos, z.ypos)<=(z.diameter/2+diameter)) {
+        food++;
+        life++;
+        if (food==9) {
+          lions.add(new Lion(xpos, ypos, diameter, color(173,17,46), 25, true));
+          food=0;
+           
+        }
+        z.paku=true;
+      dungs.add(new Dung(xpos, ypos, z.diameter, color(160, 0, 0),true));
+      }
+      if (dist(xpos, ypos, z.xpos, z.ypos)<=((17-life)*diameter/2)) {
+        if (life<=5) {
+          if (nightmode) { 
+            stroke(255);
+          } else {
+            stroke(0);
+          }       
+          strokeWeight(1);
+          line(xpos, ypos, z.xpos, z.ypos);
+          vx=(z.xpos-xpos)*2/(1.5*diameter);
+          vy=(z.ypos-ypos)*2/(1.5*diameter);
+          break;
+        }
+      }
+    }
+  }
+
+  void edge() {
+    super.edge();
+  }
+
+  void display() {
+    super.display();
+  }
+
+  boolean dead() {
+    return super.dead(xpos, ypos, diameter, paku, life);
+  }
+}
+
+//plant
+class Plant {
+
+  float xpos, ypos, diameter;
+  int life=1;
+  color col;
+  boolean yummy=false;
+
+  Plant(float x, float y, float _diameter, color _col) {
+    xpos = x;//xrange/2+random(-x+_diameter/2, x-_diameter/2);
+    ypos = y;//yrange/2+random(-y+_diameter/2, y-_diameter/2);
+    diameter = _diameter;
+    col = _col;
+  }
+
+  Plant(float x, float y, float _diameter, color _col, boolean _yummy) {
+    xpos = x;
+    ypos = y;
+    diameter = _diameter;
+    col = _col;
+    yummy=_yummy;
+    if (xpos<=_diameter) xpos=_diameter;
+    if (ypos<=_diameter) ypos=_diameter;
+    if (xpos>=xrange) xpos=xrange;
+    if (ypos>=yrange) ypos=yrange;
+  }
+
+  void update() {
+    display();
+  }
+
+  void display() {
+    stroke(col);
+    strokeWeight(2);
+    line(xpos, ypos, xpos-diameter, ypos+diameter);
+    line(xpos, ypos, xpos+diameter, ypos+diameter);
+    stroke(0);
+    strokeWeight(1);
+  }
+
+  boolean dead() {
+    if (yummy == true) return true;
+    if (life<=0) return true;
+    else       return false;
+  }
+}
+
+//zebra
+class Deer extends Animal {
+  Deer(float x, float y, float _diameter, color _col, int _life) {
+    super(x, y, _diameter, _col, _life);
+  }
+  Deer(float x, float y, float _diameter, color _col, int _life, boolean _breed) {
+    super(x, y, _diameter, _col, _life, _breed);
+  }
+
+  void update() {
+    move();
+    eat();
+    edge();
+    display();
+  }
+
+  void move() {
+    super.move();
+  }
+
+  void eat() {
+    for (int i = plants.size()-1; i>=0; i--) {
+      Plant p = plants.get(i);
+      if (dist(xpos, ypos, p.xpos, p.ypos)<=(p.diameter/2+diameter)) {
+        food++;
+        life++;
+        if (food==5) {
+          //誕生
+          deers.add(new Deer(xpos, ypos, diameter, color(35, 108, 180), 20, true));
+           dungs.add(new Dung(xpos, ypos, p.diameter, color(160, 0, 0), true));
+          food=0;
+        }
+        p.yummy=true;
+       
+      }
+      if (dist(xpos, ypos, p.xpos, p.ypos)<=((15-life)*diameter/2)) {
+        //if (life<=5) {
+         if (nightmode) { 
+            stroke(255);
+          } else {
+            stroke(0);
+          }       
+          strokeWeight(1);
+          line(xpos, ypos, p.xpos, p.ypos);
+          vx=(p.xpos-xpos)/(1.5*diameter);
+          vy=(p.ypos-ypos)/(1.5*diameter);
+          break;
+        //}
+      }
+    }
+  }
+
+  void edge() {
+    super.edge();
+  }
+
+  void display() {
+    super.display();
+  }
+
+  boolean dead() {
+    return super.dead(xpos, ypos, diameter, paku, life);
+  }
+}
